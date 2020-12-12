@@ -41,8 +41,13 @@ void createBullet(bool bMotion, uint8_t bPos, uint8_t bHeight, uint8_t pHeight){
   }
 }
 
+void createObs(uint8_t oPos, bool oMotion){
+  oPos = random(16, 18);
+  oMotion = true;
+}
+
 void destroyObs(uint8_t oPos, bool oMotion){
-  oPos = 16;
+  oPos = 17;
   oMotion = false;
 }
 
@@ -72,6 +77,10 @@ void loop(){
       timp = millis();
       moveChar(playerHeight);
       createBullet(bulletMotion, bulletPos, bulletHeight, playerHeight);
+      if (obsPos1 <= 3)
+        createObs(obsPos2, obsMotion2);
+      if (obsPos2 <= 3)
+        createObs(obsPos1, obsMotion1);
       if (obsMotion1 == true){
         for (uint8_t i=0; i<=3; i++){
           lcd.setCursor(obsPos1+i,obsHeight1);
@@ -92,6 +101,9 @@ void loop(){
           obsPos1 = obsPos1 - 1;
         if (obsMotion2 == true){
           obsPos2 = obsPos2 - 1;
+        if (bulletMotion == true){
+          bulletPos = bulletPos + 1;
+        }
         if (bulletHeight == 1 || bulletPos >= obsPos1)
           destroyObs(obsPos1, obsMotion1);
           bulletMotion = false;
