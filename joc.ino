@@ -6,7 +6,7 @@ byte obs[] = {B11111, B11111, B11111, B11111, B11111, B11111, B11111, B11111};
 byte bullet[] = {B00000, B00000, B11100, B11111, B11111, B11100, B00000, B00000};
 
 bool pause = false;
-uint8_t playerHeight = 0;
+uint8_t playerHeight;
 uint8_t obsHeight1 = 0, obsHeight2 = 1;
 uint8_t obsPos1 = 16, obsPos2 = 16;
 bool obsMotion1 = true, obsMotion2 = false, bulletMotion = false;
@@ -54,6 +54,10 @@ void destroyObs(uint8_t oPos, bool oMotion){
 void collision(uint8_t oPos, uint8_t oHeight, uint8_t pHeight){
   if (oPos<=0 && oPos>=-3 && oHeight == pHeight)
     pause = true;
+  Serial.print(oHeight);
+  Serial.println(pHeight);
+  if (pause == false)
+    Serial.println("col");
 }
 
 void setup(){
@@ -93,9 +97,10 @@ void loop(){
           lcd.write((byte)1);
         }
       }
-      if (bulletMotion == true)
+      if (bulletMotion == true){
         lcd.setCursor(bulletPos, bulletHeight);
         lcd.write((byte)2);
+      }
       if (frameCounter%5 == 0){
         if (obsMotion1 == true)
           obsPos1 = obsPos1 - 1;
@@ -104,21 +109,23 @@ void loop(){
         if (bulletMotion == true){
           bulletPos = bulletPos + 1;
         }
-        if (bulletHeight == 1 || bulletPos >= obsPos1)
+        if (bulletHeight == 1 || bulletPos >= obsPos1){
           destroyObs(obsPos1, obsMotion1);
           bulletMotion = false;
           bulletPos = -1;
-        if (bulletHeight == 2 || bulletPos >= obsPos2)
+        }
+        if (bulletHeight == 2 || bulletPos >= obsPos2){
           destroyObs(obsPos2, obsMotion2);
           bulletMotion = false;
           bulletPos = -1;
+        }
         nextObsDistance = nextObsDistance - 1;
         Serial.println("obstacole miscate");
-      }//miscare obstacol
+        }//miscare obstacol
+      }
       collision(obsPos1, obsHeight1, playerHeight);
       collision(obsPos2, obsHeight2, playerHeight);
       frameCounter = frameCounter + 1;
-      }
     }
   }//pause false
   else{
