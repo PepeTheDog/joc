@@ -41,14 +41,19 @@ void createBullet(bool bMotion, uint8_t bPos, uint8_t bHeight, uint8_t pHeight){
   }
 }
 
+void destroyBullet(bool bMotion, uint8_t bPos){
+  bMotion = false;
+  bPos = -1;
+}
+
 void createObs(uint8_t oPos, bool oMotion){
   oPos = random(16, 18);
   oMotion = true;
 }
 
 void destroyObs(uint8_t oPos, bool oMotion){
-  oPos = 17;
   oMotion = false;
+  oPos = 17;
 }
 
 void collision(uint8_t oPos, uint8_t oHeight, uint8_t pHeight){
@@ -80,7 +85,11 @@ void loop(){
       lcd.clear();
       timp = millis();
       moveChar(playerHeight);
-      createBullet(bulletMotion, bulletPos, bulletHeight, playerHeight);
+      if (tastatura(analogRead(A1)) == 3){
+        bulletMotion = true;
+        bulletPos = 1;
+        bulletHeight = playerHeight;
+      } // tragere glont
       if (obsPos1 <= 3)
         createObs(obsPos2, obsMotion2);
       if (obsPos2 <= 3)
@@ -104,11 +113,12 @@ void loop(){
       if (frameCounter%5 == 0){
         if (obsMotion1 == true)
           obsPos1 = obsPos1 - 1;
-        if (obsMotion2 == true){
+        if (obsMotion2 == true)
           obsPos2 = obsPos2 - 1;
+        // miscare obstacole
         if (bulletMotion == true){
           bulletPos = bulletPos + 1;
-        }
+        }// miscare glont
         if (bulletHeight == 1 || bulletPos >= obsPos1){
           destroyObs(obsPos1, obsMotion1);
           bulletMotion = false;
@@ -118,11 +128,10 @@ void loop(){
           destroyObs(obsPos2, obsMotion2);
           bulletMotion = false;
           bulletPos = -1;
-        }
+        }// distrugere obstacole
         nextObsDistance = nextObsDistance - 1;
         Serial.println("obstacole miscate");
-        }//miscare obstacol
-      }
+        }
       collision(obsPos1, obsHeight1, playerHeight);
       collision(obsPos2, obsHeight2, playerHeight);
       frameCounter = frameCounter + 1;
