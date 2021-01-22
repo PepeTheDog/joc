@@ -22,6 +22,7 @@ uint8_t tastatura(uint16_t buttonValue){
     return 2;
   else if (buttonValue>=345 && buttonValue<355)
     return 3;
+  Serial.println(buttonValue);
 }
 
 void moveChar(uint8_t pHeight){
@@ -29,6 +30,7 @@ void moveChar(uint8_t pHeight){
     pHeight = 0;
   else if (tastatura(analogRead(A1)) == 2)
     pHeight = 1;
+  //Serial.println(pHeight);
   lcd.setCursor(0,pHeight);
   lcd.write((byte)0);
 }
@@ -38,6 +40,7 @@ void createBullet(bool bMotion, uint8_t bPos, uint8_t bHeight, uint8_t pHeight){
     bMotion = true;
     bPos = 1;
     bHeight = pHeight;
+    //Serial.print(bHeight);
   }
 }
 
@@ -59,8 +62,6 @@ void destroyObs(uint8_t oPos, bool oMotion){
 void collision(uint8_t oPos, uint8_t oHeight, uint8_t pHeight){
   if (oPos<=0 && oPos>=-3 && oHeight == pHeight)
     pause = true;
-  Serial.print(oHeight);
-  Serial.println(pHeight);
   if (pause == false)
     Serial.println("col");
 }
@@ -81,15 +82,11 @@ void setup(){
 void loop(){
   if (pause == false){
     if (millis() - timp >= 100){
-      Serial.println("frame");
+      //Serial.println("frame");
       lcd.clear();
       timp = millis();
       moveChar(playerHeight);
-      if (tastatura(analogRead(A1)) == 3){
-        bulletMotion = true;
-        bulletPos = 1;
-        bulletHeight = playerHeight;
-      } // tragere glont
+      createBullet(bulletMotion, bulletPos, bulletHeight, playerHeight);
       if (obsPos1 <= 3)
         createObs(obsPos2, obsMotion2);
       if (obsPos2 <= 3)
@@ -130,7 +127,7 @@ void loop(){
           bulletPos = -1;
         }// distrugere obstacole
         nextObsDistance = nextObsDistance - 1;
-        Serial.println("obstacole miscate");
+        //Serial.println("obstacole miscate");
         }
       collision(obsPos1, obsHeight1, playerHeight);
       collision(obsPos2, obsHeight2, playerHeight);
